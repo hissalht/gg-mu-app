@@ -1,20 +1,16 @@
+import { Link, Route, Routes } from "react-router-dom";
 import { useNotion } from "./api";
+import Character from "./views/Character";
+import Home from "./views/Home";
 
 interface CharacterResult {
   results: Array<{
     id: string;
     properties: {
-      Name: {
+      name: {
         title: Array<{ text: { content: string } }>;
       };
-      Portrait: {
-        files: Array<{
-          external: {
-            url: string;
-          };
-        }>;
-      };
-      Slug: {
+      slug: {
         formula: {
           string: string;
         };
@@ -29,8 +25,6 @@ function App() {
     { method: "POST" }
   );
 
-  console.log({ data, error });
-
   return (
     <div className="App">
       <p>Hello world</p>
@@ -38,11 +32,19 @@ function App() {
         <ul>
           {data.results.map((character) => (
             <li key={character.id}>
-              {character.properties.Name.title[0].text.content}
+              <Link
+                to={"/characters/" + character.properties.slug.formula.string}
+              >
+                {character.properties.name.title[0].text.content}
+              </Link>
             </li>
           ))}
         </ul>
       )}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/characters/:id" element={<Character />} />
+      </Routes>
     </div>
   );
 }
