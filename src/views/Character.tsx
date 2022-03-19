@@ -1,25 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useNotion } from "../api";
+import useCharacter from "../hooks/useCharacter";
 
 export default function Character() {
   const { id } = useParams<{ id: string }>();
-
-  const { data } = useNotion(
-    `/databases/${import.meta.env.VITE_CHARACTER_DB_ID}/query`,
-    {
-      method: "POST",
-      json: {
-        filter: {
-          property: "slug",
-          formula: {
-            string: {
-              equals: id,
-            },
-          },
-        },
-      },
-    }
-  );
+  const { data } = useCharacter(id!);
 
   return (
     <div>
