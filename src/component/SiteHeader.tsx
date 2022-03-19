@@ -13,23 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import { useNotion } from "../api";
-
-interface CharacterResult {
-  results: Array<{
-    id: string;
-    properties: {
-      name: {
-        title: Array<{ text: { content: string } }>;
-      };
-      slug: {
-        formula: {
-          string: string;
-        };
-      };
-    };
-  }>;
-}
+import { useCharacters } from "../api/characters";
 
 export default function SiteHeader() {
   const {
@@ -38,10 +22,7 @@ export default function SiteHeader() {
     onClose: closeMenu,
   } = useDisclosure();
 
-  const { data } = useNotion<CharacterResult>(
-    "/databases/" + import.meta.env.VITE_CHARACTER_DB_ID + "/query",
-    { method: "POST" }
-  );
+  const { data } = useCharacters();
 
   const location = useLocation();
   useEffect(() => {
@@ -58,12 +39,7 @@ export default function SiteHeader() {
           onClick={toggleMenu}
         />
       </Box>
-      <Drawer
-        isOpen={isMenuOpen}
-        onClose={closeMenu}
-        size="full"
-        placement="bottom"
-      >
+      <Drawer isOpen={isMenuOpen} onClose={closeMenu}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -72,16 +48,13 @@ export default function SiteHeader() {
             <nav>
               {data && (
                 <ul>
-                  {data.results.map((character) => (
+                  {data.map((character) => (
                     <li key={character.id}>
                       <Link
                         as={RouterLink}
-                        to={
-                          "/characters/" +
-                          character.properties.slug.formula.string
-                        }
+                        to={"/characters/" + character.slug}
                       >
-                        {character.properties.name.title[0].text.content}
+                        {character.name}
                       </Link>
                     </li>
                   ))}

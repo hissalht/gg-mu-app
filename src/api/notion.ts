@@ -1,6 +1,6 @@
 import ky, { Options } from "ky";
 import { merge } from "lodash-es";
-import useSWR from "swr";
+import useSWR, { SWRConfiguration } from "swr";
 
 export function fetchNotion(url: string, options: Options): Promise<any> {
   const defaultOptions = {
@@ -15,6 +15,10 @@ export function fetchNotion(url: string, options: Options): Promise<any> {
   return ky("/api" + url, mergedOptions).json();
 }
 
-export function useNotion<T = any>(url: string, options?: Options) {
-  return useSWR<T>([url, options], fetchNotion);
+export function useNotion<T = any>(
+  url: string,
+  options?: Options,
+  config?: SWRConfiguration
+) {
+  return useSWR<T>([url, options], fetchNotion, config);
 }
