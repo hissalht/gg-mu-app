@@ -1,45 +1,50 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useNotion } from "./api";
+
+interface CharacterResult {
+  results: Array<{
+    id: string;
+    properties: {
+      Name: {
+        title: Array<{ text: { content: string } }>;
+      };
+      Portrait: {
+        files: Array<{
+          external: {
+            url: string;
+          };
+        }>;
+      };
+      Slug: {
+        formula: {
+          string: string;
+        };
+      };
+    };
+  }>;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { data, error } = useNotion<CharacterResult>(
+    "/databases/" + import.meta.env.VITE_CHARACTER_DB_ID + "/query",
+    { method: "POST" }
+  );
+
+  console.log({ data, error });
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <p>Hello world</p>
+      {data && (
+        <ul>
+          {data.results.map((character) => (
+            <li key={character.id}>
+              {character.properties.Name.title[0].text.content}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
